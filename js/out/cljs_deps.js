@@ -120,7 +120,7 @@ goog.addDependency("events/events.js", ['goog.events', 'goog.events.CaptureSimul
 goog.addDependency("../extendword/words.js", ['extendword.words'], ['cljs.core']);
 goog.addDependency("testing/pseudorandom.js", ['goog.testing.PseudoRandom'], ['goog.Disposable']);
 goog.addDependency("../rand_cljc/core.js", ['rand_cljc.core'], ['goog.testing.PseudoRandom', 'cljs.core', 'goog.array']);
-goog.addDependency("../extendword/core.js", ['extendword.core'], ['cljs.core', 'reagent.core', 'reagent.dom', 'goog.string', 'goog.events', 'extendword.words', 'rand_cljc.core']);
+goog.addDependency("../extendword/core.js", ['extendword.core'], ['cljs.core', 'reagent.core', 'reagent.dom', 'goog.string', 'goog.events', 'extendword.words', 'rand_cljc.core', 'clojure.set']);
 goog.addDependency("../devtools/protocols.js", ['devtools.protocols'], ['cljs.core']);
 goog.addDependency("../devtools/context.js", ['devtools.context'], ['cljs.core']);
 goog.addDependency("../devtools/format.js", ['devtools.format'], ['cljs.core', 'devtools.context']);

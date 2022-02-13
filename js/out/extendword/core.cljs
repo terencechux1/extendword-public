@@ -5,7 +5,8 @@
       [goog.string :as gstring]
       [goog.events :as gev]
       [extendword.words :as w]
-      [rand-cljc.core :as rng]))
+      [rand-cljc.core :as rng]
+      [clojure.set :as clset]))
 
 (def display (r/atom "none"))
 (def seconds (r/atom 0))
@@ -47,18 +48,19 @@
   (start-game))
 
 (defn handle-enter []
-  (let [word (str (first (get @qlist @position)) @answer)]
-    (if (and (> (count @answer) 1) (allset word))
-      (swap! corrects conj word)
-      (swap! wrongs conj [word (rand-nth (second (get @qlist @position)))]))
-    (swap! position inc)
-    (reset! answer "")))
+  (when @is-running
+    (let [word (str (first (get @qlist @position)) @answer)]
+      (if (and (> (count @answer) 1) (allset word))
+        (swap! corrects conj word)
+        (swap! wrongs conj [word (rand-nth (second (get @qlist @position)))]))
+      (swap! position inc)
+      (reset! answer ""))))
 
 (defn handle-pass []
-  (swap! passes conj [(first (get @qlist @position)) (rand-nth (second (get @qlist @position)))])
-  (swap! position inc)
-  (swap! seconds #(- % 1))
-  (reset! answer ""))
+  (when @is-running (swap! passes conj [(first (get @qlist @position)) (rand-nth (second (get @qlist @position)))])
+                    (swap! position inc)
+                    (swap! seconds #(- % 1))
+                    (reset! answer "")))
 
 (defn handle-key-down [key]
   (case key
@@ -78,10 +80,10 @@
    [:p
     ;[:button {:on-click #(reset! puzzle (rand-int 1000000))} "Generate random puzzle"]
     [:button.button-9 {:on-click start-game
-                       :disabled @is-running :style {:margin-right "50px"}} "Start game"]
+                       :disabled @is-running :style {:margin-right "10%" :width "20%"}} "Start"]
     [:button.button-9 {:on-click start-new-random-game
-                       :disabled @is-running :style {:margin-right "50px"}} "Start new random game"]
-    [:button.button-9 {:on-click #(reset! display "block")} "Help"]]])
+                       :disabled @is-running :style {:margin-right "10%" :width "40%"}} "Start random"]
+    [:button.button-9 {:on-click #(reset! display "block") :style {:width "16%"}} "Help"]]])
 
 (defn timer []
   [:div (gstring/format "%.1f" @seconds)])
@@ -99,7 +101,9 @@
                :on-change #(reset! answer (-> % .-target .-value))
                :style     {:font-size "30px" :background-color "#F0FFFF" :border "none"}}]]
      [:td {:style {:width "160px" :border-collapse "collapse"}}
-      [:button.button-9 {:style {:height "30px" :font-size "80%"} :on-click handle-pass :disabled (not @is-running)} "Pass"]]]]])
+      [:button.button-9 {:style {:height "30px" :font-size "80%"} :on-click #(do (handle-pass)
+                                                                                 (.focus (.getElementById js/document "thebox")))
+                         :disabled (not @is-running)} "Pass"]]]]])
 
 (defn dashboard []
   [:div {:style {:margin-bottom "100px" :width "100%"}}
@@ -126,7 +130,7 @@
 (defn repl []
   (let [r (rng/rng 123)]
     [:div {:style {:clear "both"}} [:div (str (rng/rand-int r 20) "first")]
-     [:div (str (type @seconds))]]))
+     [:div (str (clset/difference (set (flatten w/questions)) allset))]]))
 
 (defn home-page []
   [:div
