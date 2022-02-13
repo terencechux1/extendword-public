@@ -49,7 +49,7 @@
 
 (defn handle-enter []
   (when @is-running
-    (let [word (str (first (get @qlist @position)) @answer)]
+    (let [word (clojure.string/lower-case (str (first (get @qlist @position)) @answer))]
       (if (and (> (count @answer) 1) (allset word))
         (swap! corrects conj word)
         (swap! wrongs conj [word (rand-nth (second (get @qlist @position)))]))
