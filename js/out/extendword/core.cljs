@@ -26,22 +26,25 @@
   (js/clearInterval @handler))
 
 (defn start-game []
-  (let [r (rng/rng @puzzle)]
-    (reset! is-running true)
-    (reset! wrongs [])
-    (reset! corrects [])
-    (reset! passes [])
-    (reset! qlist (->> (repeatedly 30 #(rng/rand-int r (count w/questions)))
-                       (map #(w/questions %))
-                       vec))
-    (reset! seconds 30)
-    (reset! position 0)
-    (reset! handler (js/setInterval #(swap! seconds (fn [s] (- s (/ 1 10)))) 100))
-    (.focus (.getElementById js/document "thebox"))))
+  (if (js/isNaN @puzzle)
+    (js/alert "Please enter a puzzle number")
+    (let [r (rng/rng @puzzle)]
+      (reset! is-running true)
+      (reset! wrongs [])
+      (reset! corrects [])
+      (reset! passes [])
+      (reset! qlist (->> (repeatedly 30 #(rng/rand-int r (count w/questions)))
+                         (map #(w/questions %))
+                         vec))
+      (reset! seconds 30)
+      (reset! position 0)
+      (reset! handler (js/setInterval #(swap! seconds (fn [s] (- s (/ 1 10)))) 100))
+      (.focus (.getElementById js/document "thebox")))))
 
 (defn stop-game []
   (js/clearInterval @handler)
-  (reset! is-running false))
+  (reset! is-running false)
+  (js/alert (str "Your score is " (count @corrects))))
 
 (defn start-new-random-game []
   (reset! puzzle (rand-int 1000000))
@@ -140,7 +143,7 @@
    [timer]
    [the-word]
    [dashboard]
-   [result]
+   ;[result]
    ;[repl]
    ])
 
